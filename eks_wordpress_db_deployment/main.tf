@@ -8,6 +8,7 @@ resource "kubernetes_namespace" "wp_namespace" {
 resource "aws_ebs_volume" "wordpress_volume" {
   availability_zone = "ap-south-1b"  # Specify the availability zone where the EBS volume will exist
   size              = 20            # Size of the volume in GiBs
+  type = gp3
   tags = {
     Name = "wordpress-volume"  # Optional: Assign tags to the volume
   }
@@ -89,8 +90,8 @@ resource "kubernetes_persistent_volume_claim" "wp_db_persistent_volume_claim" {
     name = "wp-db-presistentclaim"
   }
   spec {
-    storage_class_name = "gp2"
-    access_modes = ["ReadWriteMany"]
+    storage_class_name = "gp3"
+    access_modes = ["ReadWriteOnce"]
     resources {
       requests = {
         storage = "20Gi"

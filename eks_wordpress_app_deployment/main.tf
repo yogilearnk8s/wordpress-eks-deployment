@@ -58,12 +58,13 @@ resource "kubernetes_secret" "wordpress_db_secret" {
 }
 
 
-resource "kubernetes_persistent_volume" "wp_persistent_volume" {
+resource "kubernetes_persistent_volume" "wp_app_persistent_volume" {
   metadata {
-    name = "wp-pv-claim"
+    name = "wp-pv-app"
  
   }
   spec {
+    storage_class_name = "gp3"
     capacity = {
       storage = "20Gi"
     }
@@ -81,6 +82,30 @@ resource "kubernetes_persistent_volume" "wp_persistent_volume" {
 
   }
 }
+
+
+resource "kubernetes_persistent_volume_claim" "wp_app_persistent_volume_claim" {
+  metadata {
+    name = "wp-app-presistentclaim"
+  }
+  spec {
+    storage_class_name = "gp3"
+    access_modes = ["ReadWriteOnce"]
+    resources {
+      requests = {
+        storage = "20Gi"
+      }
+    }
+    selector {
+      match_labels = {
+         name = "wp-app"
+      }  
+    }
+    volume_name = "${kubernetes_persistent_volume.wp_app_persistent_volume.metadata.0.name}"
+  }
+}
+
+
 
 resource "kubernetes_deployment" "wordpress_app" {
   metadata {
@@ -137,7 +162,7 @@ resource "kubernetes_deployment" "wordpress_app" {
         volume{
           name = "wordpress-persistent-storage"
           persistent_volume_claim {
-            claim_name = "wp-pv-claim"
+            claim_name = "wp-app-presistentclaim"
           }
         }
 
