@@ -152,15 +152,15 @@ resource "kubernetes_deployment" "wordpress_db" {
             name = "mysql"
           }
                 env {
-               name = "WORDPRESS_DB_NAME"
+               name = "MYSQL_DATABASE"
               value = "wordpressdb"
             }
           env {
-           name = "WORDPRESS_DB_USER"
+           name = "MYSQL_USER"
            value = "wordpress-db-user"
             }
            env {
-           name = "WORDPRESS_DB_PASSWORD"
+           name = "MYSQL_PASSWORD"
            value_from {
               secret_key_ref {
                 name = kubernetes_secret.wordpress_db_secret.metadata[0].name
@@ -178,16 +178,7 @@ resource "kubernetes_deployment" "wordpress_db" {
             name = "wordpress-persistent-storage"
             mount_path =  "/var/lib/mysql"
           }
-            resources {
-            limits = {
-              cpu    = "500m"
-              memory = "512Mi"
-            }
-            requests = {
-              cpu    = "250m"
-              memory = "50Mi"
-            }
-          }
+
         }
         volume{
           name = "wordpress-persistent-storage"
