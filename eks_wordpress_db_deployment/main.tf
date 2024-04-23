@@ -14,6 +14,19 @@ resource "aws_ebs_volume" "wordpress_volume" {
   }
 }
 
+resource "kubernetes_storage_class" "wp-storage" {
+  metadata {
+    name = "wp-storage"
+  }
+  storage_provisioner = "kubernetes.io/aws-ebs"
+  reclaim_policy      = "Delete"
+  parameters = {
+    type = "gp3"
+  }
+  volume_binding_mode = "Immediate"
+  
+}
+
 resource "kubernetes_secret" "wp_secret" {
   metadata {
     name = "wp-auth"
@@ -106,6 +119,24 @@ resource "kubernetes_persistent_volume_claim" "wp_db_persistent_volume_claim" {
   }
 }
 
+resource "kubernetes_service" "wp-mysql" {
+  metadata {
+    name = "wordpress-mysql"
+  }
+  spec {
+    selector = {
+      app = "wordpress_db"
+    }
+    session_affinity = "ClientIP"
+    port {
+      port        = 3306
+      #target_port = 80
+    }
+
+    #type = "LoadBalancer"
+  }
+}
+
 resource "kubernetes_deployment" "wordpress_db" {
   metadata {
     name      = "wp-db-deployment"
@@ -155,7 +186,7 @@ resource "kubernetes_deployment" "wordpress_db" {
 
            env {
                name = "WORDPRESS_DB_HOST"
-              value = "wordpress-db-host"
+              value = "wordpress-mysql"
             }
 
           volume_mount {
