@@ -91,6 +91,7 @@ resource "kubernetes_persistent_volume" "wp_db_persistent_volume" {
     }
 
   }
+  depends_on = [aws_ebs_volume.wordpress_volume]
 }
 
 
