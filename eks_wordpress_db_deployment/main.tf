@@ -69,10 +69,10 @@ resource "kubernetes_persistent_volume" "wp_db_persistent_volume" {
     }
     access_modes = ["ReadWriteOnce"]
     persistent_volume_source {
-        csi {
-          driver = "ebs.csi.aws.com"
-          volume_handle = "awsElasticBlockStore"
-        }
+      #  csi {
+       #   driver = "ebs.csi.aws.com"
+        #  volume_handle = "awsElasticBlockStore"
+        #}
         aws_elastic_block_store {
            volume_id = "aws_ebs_volume.wordpress_volume.id"
 
