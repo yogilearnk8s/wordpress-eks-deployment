@@ -97,7 +97,7 @@ resource "kubernetes_persistent_volume" "wp_db_persistent_volume" {
 resource "kubernetes_persistent_volume_claim" "wp_db_persistent_volume_claim" {
   metadata {
     name = "wp-db-presistentclaim"
-    namespace = "wp-namespace"
+    #namespace = "wp-namespace"
     labels = {
        name = "wp-db"
        app = "wordpress_db"
