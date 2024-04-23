@@ -3,18 +3,9 @@ provider "aws" {
 }
 
 
-provider "kubernetes" {
-  host                   = module.eks_cluster_creation.cluster_endpoint
-  cluster_ca_certificate = base64decode(module.eks_cluster_creation.cluster_certificate_authority_data)
-  token = data.aws_eks_cluster_auth.default.token
-}
-
-terraform {
-  backend "s3" {
-    bucket = "yogi-tf"
-    key    = "terraform-backend/wordpress-eks-deployment.tf"
-    region = "ap-south-1"
-  }
+data "aws_eks_cluster_auth" "default" {
+  name = local.name
+  #name = module.eks_cluster_creation.cluster_name
 }
 
 locals {
@@ -31,9 +22,19 @@ locals {
   }
 }
 
-data "aws_eks_cluster_auth" "default" {
-  name = local.name
-  #name = module.eks_cluster_creation.cluster_name
+
+provider "kubernetes" {
+  host                   = data.eks_cluster_creation.default.cluster_endpoint
+  cluster_ca_certificate = base64decode(data.eks_cluster_creation.default.cluster_certificate_authority_data)
+  token = data.aws_eks_cluster_auth.default.token
+}
+
+terraform {
+  backend "s3" {
+    bucket = "yogi-tf"
+    key    = "terraform-backend/wordpress-eks-deployment.tf"
+    region = "ap-south-1"
+  }
 }
 
 
