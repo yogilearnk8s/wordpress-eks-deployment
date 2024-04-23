@@ -4,7 +4,6 @@ resource "kubernetes_namespace" "wp_namespace" {
   }
 }
 
-
 resource "aws_ebs_volume" "wordpress_volume" {
   availability_zone = "ap-south-1b"  # Specify the availability zone where the EBS volume will exist
   size              = 20            # Size of the volume in GiBs
@@ -27,21 +26,6 @@ resource "kubernetes_storage_class" "wp-storage" {
   
 }
 
-resource "kubernetes_secret" "wp_secret" {
-  metadata {
-    name = "wp-auth"
-    namespace = "wp-namespace"
-  }
-
-  data = {
-    username = "admin"
-    password = "P4ssw0rd"
-  }
-
-  type = "kubernetes.io/basic-auth"
-}
-
-
 resource "kubernetes_config_map" "env_values" {
   metadata {
     name = "db-env-values"
@@ -61,7 +45,7 @@ resource "kubernetes_secret" "wordpress_db_secret" {
         name      = "wordpress-db-password"
         namespace = "wp-namespace"
     }
-
+    type = "kubernetes.io/basic-auth"
     data = {
         WORDPRESS_DB_PASSWORD     = "dbsecretvalue"
     }
@@ -127,7 +111,7 @@ resource "kubernetes_service" "wp-mysql" {
     selector = {
       app = "wordpress_db"
     }
-    session_affinity = "ClientIP"
+    #session_affinity = "ClientIP"
     port {
       port        = 3306
       #target_port = 80
