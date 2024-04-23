@@ -184,5 +184,5 @@ resource "kubernetes_deployment" "wordpress_db" {
       }
     }
   }
-   depends_on = [ kubernetes_persistent_volume.wp_db_persistent_volume]
+   depends_on = [kubernetes_persistent_volume_claim.wp_db_persistent_volume_claim]
 }
