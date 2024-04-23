@@ -16,7 +16,7 @@ resource "aws_ebs_volume" "wordpress_volume" {
 resource "kubernetes_storage_class" "wp-storage" {
   metadata {
     name = "wp-storage"
-    namespace = "wp-namespace"
+ 
     labels = {
        name = "wp-db"
        app = "wordpress_db"
@@ -65,7 +65,7 @@ resource "kubernetes_secret" "wordpress_db_secret" {
 resource "kubernetes_persistent_volume" "wp_db_persistent_volume" {
   metadata {
     name = "mysql-pv"
-    namespace = "wp-namespace"
+   
     labels = {
        name = "wp-db"
        app = "wordpress_db"
