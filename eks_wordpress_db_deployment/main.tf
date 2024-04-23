@@ -47,7 +47,7 @@ resource "kubernetes_secret" "wordpress_db_secret" {
     }
  
     data = {
-        name = "wordpress-db-password"
+        username = "wordpress-db-password"
         wordpress-pwd   = "dbsecretvalue"
     }
        type = "kubernetes.io/basic-auth"
