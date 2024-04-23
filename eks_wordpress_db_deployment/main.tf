@@ -16,6 +16,11 @@ resource "aws_ebs_volume" "wordpress_volume" {
 resource "kubernetes_storage_class" "wp-storage" {
   metadata {
     name = "wp-storage"
+    namespace = "wp-namespace"
+    labels = {
+       name = "wp-db"
+       app = "wordpress_db"
+    }
   }
   storage_provisioner = "kubernetes.io/aws-ebs"
   reclaim_policy      = "Delete"
@@ -44,6 +49,10 @@ resource "kubernetes_secret" "wordpress_db_secret" {
     metadata {
         name      = "wordpress-db-password"
         namespace = "wp-namespace"
+          labels = {
+       name = "wp-db"
+       app = "wordpress_db"
+    }
     }
  
     data = {
@@ -56,8 +65,10 @@ resource "kubernetes_secret" "wordpress_db_secret" {
 resource "kubernetes_persistent_volume" "wp_db_persistent_volume" {
   metadata {
     name = "mysql-pv"
+    namespace = "wp-namespace"
     labels = {
        name = "wp-db"
+       app = "wordpress_db"
     }
     
   }
@@ -86,6 +97,11 @@ resource "kubernetes_persistent_volume" "wp_db_persistent_volume" {
 resource "kubernetes_persistent_volume_claim" "wp_db_persistent_volume_claim" {
   metadata {
     name = "wp-db-presistentclaim"
+    namespace = "wp-namespace"
+    labels = {
+       name = "wp-db"
+       app = "wordpress_db"
+    }
   }
   spec {
     storage_class_name = "gp3"
@@ -98,6 +114,7 @@ resource "kubernetes_persistent_volume_claim" "wp_db_persistent_volume_claim" {
     selector {
       match_labels = {
          name = "wp-db"
+         app = "wordpress_db"
       }  
     }
     volume_name = "${kubernetes_persistent_volume.wp_db_persistent_volume.metadata.0.name}"
@@ -107,6 +124,11 @@ resource "kubernetes_persistent_volume_claim" "wp_db_persistent_volume_claim" {
 resource "kubernetes_service" "wp-mysql" {
   metadata {
     name = "wordpress-mysql"
+        namespace = "wp-namespace"
+    labels = {
+       name = "wp-db"
+       app = "wordpress_db"
+    }
   }
   spec {
     selector = {
