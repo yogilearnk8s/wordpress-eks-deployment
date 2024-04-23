@@ -2,6 +2,15 @@ provider "aws" {
   region     = "ap-south-1"
 }
 
+data "terraform_remote_state" "eks-cluster-info" {
+  backend = "s3"
+  config = {
+    bucket               = "yogi-tf"
+    #workspace_key_prefix = "terraform-backend/eks-wordpress-cluster.tf"
+    key                  = "terraform-backend/eks-wordpress-cluster.tf"
+    region               = "ap-south-1"
+  }
+}
 
 data "aws_eks_cluster_auth" "default" {
   name = local.name
@@ -27,8 +36,8 @@ locals {
 }
 
 provider "kubernetes" {
-  host                   = data.aws_eks_cluster.eks-cluster.cluster_endpoint
-  cluster_ca_certificate = base64decode(data.aws_eks_cluster.eks-cluster.cluster_certificate_authority_data)
+  host                   = data.terraform_remote_state.eks-cluster-info.outputs.cluster_endpoint
+  cluster_ca_certificate = base64decode(data.terraform_remote_state.eks-cluster-info.outputs.cluster_certificate_authority_data)
   token = data.aws_eks_cluster_auth.default.token
 }
 
