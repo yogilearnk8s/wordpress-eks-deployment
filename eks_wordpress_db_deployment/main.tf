@@ -45,11 +45,12 @@ resource "kubernetes_secret" "wordpress_db_secret" {
         name      = "wordpress-db-password"
         namespace = "wp-namespace"
     }
-    type = "kubernetes.io/basic-auth"
+ 
     data = {
-        WORDPRESS_DB_PASSWORD     = "dbsecretvalue"
+        name = "wordpress-db-password"
+        wordpress-pwd   = "dbsecretvalue"
     }
-    
+       type = "kubernetes.io/basic-auth"
 }
 
 resource "kubernetes_persistent_volume" "wp_db_persistent_volume" {
@@ -159,11 +160,11 @@ resource "kubernetes_deployment" "wordpress_db" {
            value = "wordpress-db-user"
             }
            env {
-           name = "wordpress-db-password"
+           name = "WORDPRESS_DB_PASSWORD"
            value_from {
               secret_key_ref {
                 name = kubernetes_secret.wordpress_db_secret.metadata[0].name
-                key = "WORDPRESS_DB_PASSWORD"
+                key = "wordpress-pwd"
               } 
            }
             }
