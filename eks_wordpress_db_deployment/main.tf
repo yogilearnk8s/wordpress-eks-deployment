@@ -84,7 +84,7 @@ resource "kubernetes_persistent_volume" "wp_db_persistent_volume" {
         #  volume_handle = "awsElasticBlockStore"
         #}
         aws_elastic_block_store {
-           volume_id = "aws_ebs_volume.wordpress_volume.id"
+           volume_id = aws_ebs_volume.wordpress_volume.id
 
         }
 
