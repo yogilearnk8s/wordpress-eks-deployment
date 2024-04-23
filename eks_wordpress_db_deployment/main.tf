@@ -73,7 +73,7 @@ resource "kubernetes_persistent_volume" "wp_db_persistent_volume" {
     
   }
   spec {
-    storage_class_name = "gp3"
+    storage_class_name = "wp-storage"
     capacity = {
       storage = "20Gi"
     }
@@ -104,7 +104,7 @@ resource "kubernetes_persistent_volume_claim" "wp_db_persistent_volume_claim" {
     }
   }
   spec {
-    storage_class_name = "gp3"
+    storage_class_name = "wp-storage"
     access_modes = ["ReadWriteOnce"]
     resources {
       requests = {
