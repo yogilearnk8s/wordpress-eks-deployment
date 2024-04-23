@@ -8,6 +8,10 @@ data "aws_eks_cluster_auth" "default" {
   #name = module.eks_cluster_creation.cluster_name
 }
 
+data "aws_eks_cluster" "eks-cluster" {
+  name = local.name
+}
+
 locals {
   name   = "Sandbox-EKSCluster9"
   region = "ap-south-1"
@@ -22,10 +26,9 @@ locals {
   }
 }
 
-
 provider "kubernetes" {
-  host                   = data.eks_cluster_creation.default.cluster_endpoint
-  cluster_ca_certificate = base64decode(data.eks_cluster_creation.default.cluster_certificate_authority_data)
+  host                   = data.aws_eks_cluster.eks-cluster.cluster_endpoint
+  cluster_ca_certificate = base64decode(data.aws_eks_cluster.eks-cluster.cluster_certificate_authority_data)
   token = data.aws_eks_cluster_auth.default.token
 }
 
