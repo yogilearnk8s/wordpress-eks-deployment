@@ -31,6 +31,7 @@ resource "kubernetes_storage_class" "wp-storage" {
   
 }
 
+/*
 resource "kubernetes_config_map" "env_values" {
   metadata {
     name = "db-env-values"
@@ -44,6 +45,7 @@ resource "kubernetes_config_map" "env_values" {
     wordpress = "wordpress"
   }
 }
+*/
 
 resource "kubernetes_secret" "wordpress_db_secret" {
     metadata {

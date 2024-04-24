@@ -33,7 +33,7 @@ resource "kubernetes_secret" "wordpress_app_secret" {
     
 }
 
-
+/*
 resource "kubernetes_config_map" "env_values" {
   metadata {
     name = "app-env-values"
@@ -49,7 +49,7 @@ resource "kubernetes_config_map" "env_values" {
     wordpress = "wordpress"
   }
 }
-
+*/
 
 resource "kubernetes_secret" "wordpress_db_secret" {
     metadata {
@@ -155,6 +155,10 @@ resource "kubernetes_deployment" "wordpress_app" {
           env {
            name = "WORDPRESS_DB_HOST"
            value = "wordpress-mysql"
+            }
+          env {
+           name = "WORDPRESS_DB_NAME"
+           value = "wordpressdb"
             }
            env {
            name = "WORDPRESS_DB_PASSWORD"
