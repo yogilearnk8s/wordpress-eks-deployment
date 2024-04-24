@@ -22,7 +22,7 @@ resource "kubernetes_secret" "wordpress_app_secret" {
     metadata {
         name      = "appsecret"
         namespace = "wp-namespace"
-        labels {
+        labels = {
       app = "wordpress_app"
     }
     }
@@ -37,7 +37,7 @@ resource "kubernetes_secret" "wordpress_app_secret" {
 resource "kubernetes_config_map" "env_values" {
   metadata {
     name = "app-env-values"
-      labels {
+      labels = {
       app = "wordpress_app"
     }
   }
@@ -55,7 +55,7 @@ resource "kubernetes_secret" "wordpress_db_secret" {
     metadata {
         name      = "wordpress-db1"
         namespace = "wp-namespace"
-           labels {
+           labels = {
       app = "wordpress_app"
     }
     }
@@ -70,7 +70,7 @@ resource "kubernetes_secret" "wordpress_db_secret" {
 resource "kubernetes_persistent_volume" "wp_app_persistent_volume" {
   metadata {
     name = "wp-pv-app"
-    labels {
+    labels = {
       app = "wordpress_app"
     }
   }
@@ -99,6 +99,9 @@ resource "kubernetes_persistent_volume_claim" "wp_app_persistent_volume_claim" {
   metadata {
     name = "wp-app-presistentclaim"
     namespace = "wp-namespace"
+    labels = {
+      app = "wordpress_app"
+    }
   }
   spec {
     storage_class_name = "wp-storage"
