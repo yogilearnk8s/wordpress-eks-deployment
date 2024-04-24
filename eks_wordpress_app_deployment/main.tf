@@ -61,7 +61,7 @@ resource "kubernetes_secret" "wordpress_db_secret" {
     }
 
     data = {
-        WORDPRESS_DB_PASSWORD     = "dbsecretvalue"
+        wordpress-db-password  = "dbsecretvalue"
     }
     
 }
