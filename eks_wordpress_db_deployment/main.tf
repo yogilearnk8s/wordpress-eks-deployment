@@ -47,7 +47,7 @@ resource "kubernetes_config_map" "env_values" {
 
 resource "kubernetes_secret" "wordpress_db_secret" {
     metadata {
-        name      = "wordpress-db-password"
+        name      = "wordpress-db-pwd"
         namespace = "wp-namespace"
           labels = {
        name = "wp-db"
