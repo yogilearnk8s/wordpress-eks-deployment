@@ -22,6 +22,9 @@ resource "kubernetes_secret" "wordpress_app_secret" {
     metadata {
         name      = "appsecret"
         namespace = "wp-namespace"
+        labels {
+      app = "wordpress_app"
+    }
     }
 
     data = {
@@ -34,10 +37,13 @@ resource "kubernetes_secret" "wordpress_app_secret" {
 resource "kubernetes_config_map" "env_values" {
   metadata {
     name = "app-env-values"
+      labels {
+      app = "wordpress_app"
+    }
   }
 
   data = {
-    WORDPRESS_DB_HOST = "wordpress-db-host",
+    WORDPRESS_DB_HOST = "wordpress-mysql",
     WORDPRESS_DB_NAME = "wordpressdb",
     WORDPRESS_DB_USER = "wordpress-db-user",
     wordpress = "wordpress"
@@ -47,8 +53,11 @@ resource "kubernetes_config_map" "env_values" {
 
 resource "kubernetes_secret" "wordpress_db_secret" {
     metadata {
-        name      = "wordpress-db-password"
+        name      = "wordpress-db1"
         namespace = "wp-namespace"
+           labels {
+      app = "wordpress_app"
+    }
     }
 
     data = {
@@ -61,10 +70,12 @@ resource "kubernetes_secret" "wordpress_db_secret" {
 resource "kubernetes_persistent_volume" "wp_app_persistent_volume" {
   metadata {
     name = "wp-pv-app"
- 
+    labels {
+      app = "wordpress_app"
+    }
   }
   spec {
-    storage_class_name = "gp3"
+    storage_class_name = "wp-storage"
     capacity = {
       storage = "20Gi"
     }
@@ -75,7 +86,7 @@ resource "kubernetes_persistent_volume" "wp_app_persistent_volume" {
          # volume_handle = "awsElasticBlockStore"
         #}
          aws_elastic_block_store {
-           volume_id = "data.aws_ebs_volume.wordpress_volume.id"
+           volume_id = data.aws_ebs_volume.wordpress_volume.id
 
         }
     }
@@ -87,9 +98,10 @@ resource "kubernetes_persistent_volume" "wp_app_persistent_volume" {
 resource "kubernetes_persistent_volume_claim" "wp_app_persistent_volume_claim" {
   metadata {
     name = "wp-app-presistentclaim"
+    namespace = "wp-namespace"
   }
   spec {
-    storage_class_name = "gp3"
+    storage_class_name = "wp-storage"
     access_modes = ["ReadWriteOnce"]
     resources {
       requests = {
@@ -98,7 +110,8 @@ resource "kubernetes_persistent_volume_claim" "wp_app_persistent_volume_claim" {
     }
     selector {
       match_labels = {
-         name = "wp-app"
+ 
+         app = "wordpress_app"
       }  
     }
     volume_name = "${kubernetes_persistent_volume.wp_app_persistent_volume.metadata.0.name}"
@@ -137,11 +150,11 @@ resource "kubernetes_deployment" "wordpress_app" {
             name = "wordpress-app"
           }
           env {
-           name = "wordpress-db-host"
+           name = "WORDPRESS_DB_HOST"
            value = "wordpress-mysql"
             }
            env {
-           name = "wordpress-db-password"
+           name = "WORDPRESS_DB_PASSWORD"
            value_from {
               secret_key_ref {
                 name = kubernetes_secret.wordpress_db_secret.metadata[0].name
@@ -150,8 +163,8 @@ resource "kubernetes_deployment" "wordpress_app" {
            }
             }
             env {
-              name = "wordpress-db-user"
-              value = "wordpress"
+              name = "WORDPRESS_DB_USER"
+              value = "wordpress-db-user"
             }
           volume_mount {
             name = "wordpress-persistent-storage"

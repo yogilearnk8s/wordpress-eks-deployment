@@ -6,7 +6,7 @@ resource "kubernetes_namespace" "wp_namespace" {
 
 resource "aws_ebs_volume" "wordpress_volume" {
   availability_zone = "ap-south-1b"  # Specify the availability zone where the EBS volume will exist
-  size              = 20            # Size of the volume in GiBs
+  size              = 45            # Size of the volume in GiBs
   type = "gp3"
   tags = {
     Name = "wordpress-volume"  # Optional: Assign tags to the volume
