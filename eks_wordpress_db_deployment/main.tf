@@ -168,7 +168,7 @@ resource "kubernetes_deployment" "wordpress_db" {
       }
       spec {
         container {
-          image = "mysql:8.0"
+          image = "mysql:8.3"
           name  = "mysql"
           port {
             container_port = 3306
@@ -184,6 +184,15 @@ resource "kubernetes_deployment" "wordpress_db" {
             }
            env {
            name = "MYSQL_PASSWORD"
+           value_from {
+              secret_key_ref {
+                name = kubernetes_secret.wordpress_db_secret.metadata[0].name
+                key = "wordpress-pwd"
+              } 
+           }
+            }
+            env {
+           name = "MYSQL_ROOT_PASSWORD"
            value_from {
               secret_key_ref {
                 name = kubernetes_secret.wordpress_db_secret.metadata[0].name
